@@ -7,14 +7,14 @@ pyxform-http is a Flask-based web service that uses pyxform to convert a XLSForm
 
 # Run locally
 ```
-pip install -r requirements.txt
+pip install --requirement requirements.txt
 FLASK_APP=app/main.py FLASK_DEBUG=1 flask run
 ```
 
 # Run in Docker
 ```
-docker build -t pyxform-http .
-docker run -d --name pyxform-http -p 80:80 pyxform-http
+docker build --tag pyxform-http .
+docker run --detach --name pyxform-http --publish 80:80 pyxform-http
 ```
 
 # Test forms
