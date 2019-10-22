@@ -2,7 +2,7 @@ import logging
 from tempfile import TemporaryDirectory
 import os.path
 
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, escape
 from pyxform import xls2xform
 
 app = Flask(__name__)
@@ -17,10 +17,17 @@ def index():
 # To test: curl --request POST --data-binary @<FILE_NAME>.xlsx http://127.0.0.1/api/v1/convert
 @app.route("/api/v1/convert", methods=["POST"])
 def post():
+
+    xlsform_formid_fallback = sanitize(request.headers.get("X-XlsForm-FormId-Fallback"))
+    if xlsform_formid_fallback is None:
+        xlsform_formid_fallback = "tmp"
+
     with TemporaryDirectory() as temp_dir_name:
         try:
-            with open(os.path.join(temp_dir_name, "tmp.xml"), "w+") as xform, open(
-                os.path.join(temp_dir_name, "tmp.xlsx"), "wb"
+            with open(
+                os.path.join(temp_dir_name, xlsform_formid_fallback + ".xml"), "w+"
+            ) as xform, open(
+                os.path.join(temp_dir_name, xlsform_formid_fallback + ".xlsx"), "wb"
             ) as xlsform:
                 xlsform.write(request.get_data())
                 convert_status = xls2xform.xls2xform_convert(
@@ -43,6 +50,10 @@ def post():
         except Exception as e:
             logger.error(e)
             return response(error=str(e))
+
+
+def sanitize(string):
+    return os.path.basename(escape(string))
 
 
 def response(status=400, result=None, warnings=None, error=None):
