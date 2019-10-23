@@ -1,5 +1,5 @@
 # Overview
-pyxform-http is a Flask-based web service that uses pyxform to convert a XLSForm to an ODK XForm.
+pyxform-http is a Flask-based web service that uses pyxform to convert a XLSForm to an ODK XForm. Thanks to [Alex Patow](https://www.alexpatow.com) for doing much of the actual work on this in [xlsform-api](https://github.com/alexpatow).
 
 # Install requirements
 * Python 3
@@ -18,7 +18,6 @@ docker run --detach --name pyxform-http --publish 5000:5000 pyxform-http
 ```
 
 # Test forms
-
 
 A form that converts successfully
 ```

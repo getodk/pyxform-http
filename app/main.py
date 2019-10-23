@@ -14,7 +14,6 @@ def index():
     return "Welcome to the pyxform-http! Make a POST request to '/api/v1/convert' to convert an XLSForm to an ODK XForm."
 
 
-# To test: curl --request POST --data-binary @<FILE_NAME>.xlsx http://127.0.0.1/api/v1/convert
 @app.route("/api/v1/convert", methods=["POST"])
 def post():
 
