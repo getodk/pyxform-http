@@ -8,20 +8,20 @@ pyxform-http is a Flask-based web service that uses pyxform to convert a XLSForm
 # Run locally
 ```
 pip install --requirement requirements.txt
-FLASK_APP=app/main.py FLASK_DEBUG=1 flask run
+FLASK_APP=app/main.py:app FLASK_DEBUG=1 flask run
 ```
 
 # Run in Docker
 ```
 docker build --tag pyxform-http .
-docker run --detach --name pyxform-http --publish 5000:5000 pyxform-http
+docker run --detach --name pyxform-http --publish 5000:80 pyxform-http
 ```
 
 # Test forms
 
-A form that converts successfully
+A form that converts successfully (with chunked encoding!)
 ```
-curl --request POST --header "X-XlsForm-FormId-Fallback: pyxform-clean" --data-binary @test/pyxform-clean.xlsx http://127.0.0.1:5000/api/v1/convert
+curl --request POST --header "X-XlsForm-FormId-Fallback: pyxform-clean"  --header 'Transfer-Encoding: chunked' --data-binary @test/pyxform-clean.xlsx http://127.0.0.1:5000/api/v1/convert
 ```
 
 A form that fails to convert and returns a pyxform error
