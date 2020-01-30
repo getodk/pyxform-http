@@ -21,7 +21,7 @@ docker run --detach --name pyxform-http --publish 5000:80 pyxform-http
 
 A form that converts successfully (with chunked encoding!)
 ```
-curl --request POST --header "X-XlsForm-FormId-Fallback: pyxform-clean"  --header 'Transfer-Encoding: chunked' --data-binary @test/pyxform-clean.xlsx http://127.0.0.1:5000/api/v1/convert
+curl --request POST --header "X-XlsForm-FormId-Fallback: pyxform-clean" --header 'Transfer-Encoding: chunked' --data-binary @test/pyxform-clean.xlsx http://127.0.0.1:5000/api/v1/convert
 ```
 
 A form that fails to convert and returns a pyxform error

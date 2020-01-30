@@ -44,9 +44,23 @@ def app():
                         logger.warning(convert_status)
 
                     if os.path.isfile(xform.name):
-                        return response(
-                            status=200, result=xform.read(), warnings=convert_status
-                        )
+                        itemsets_path = os.path.join(temp_dir_name, "itemsets.csv")
+                        if os.path.isfile(itemsets_path):
+                            try:
+                                with open(itemsets_path, "r") as itemsets:
+                                    return response(
+                                        status=200,
+                                        result=xform.read(),
+                                        itemsets=itemsets.read(),
+                                        warnings=convert_status,
+                                    )
+                            except Exception as e:
+                                logger.error(e)
+                                return response(error=str(e))
+                        else:
+                            return response(
+                                status=200, result=xform.read(), warnings=convert_status
+                            )
                     else:
                         return response(error=convert_status)
 
@@ -61,8 +75,17 @@ def sanitize(string):
     return os.path.basename(escape(string))
 
 
-def response(status=400, result=None, warnings=None, error=None):
-    return jsonify(status=status, result=result, warnings=warnings, error=error), status
+def response(status=400, result=None, itemsets=None, warnings=None, error=None):
+    return (
+        jsonify(
+            status=status,
+            result=result,
+            itemsets=itemsets,
+            warnings=warnings,
+            error=error,
+        ),
+        status,
+    )
 
 
 if __name__ == "__main__":
