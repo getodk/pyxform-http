@@ -38,3 +38,13 @@ A form that passes pyxform's internal checks, but fails ODK Validate's checks
 ```
 curl --request POST --header "X-XlsForm-FormId-Fallback: validate-error" --data-binary @test/validate-error.xlsx http://127.0.0.1:5000/api/v1/convert
 ```
+
+A form that converts successfully (with external choices)
+```
+curl --request POST --header "X-XlsForm-FormId-Fallback: external-choices" --data-binary @test/external-choices.xlsx http://127.0.0.1:5000/api/v1/convert
+```
+
+A form that converts successfully (with no id)
+```
+curl --request POST --data-binary @test/pyxform-clean.xlsx http://127.0.0.1:5000/api/v1/convert
+```

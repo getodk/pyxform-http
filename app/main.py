@@ -6,6 +6,7 @@ import os.path
 
 from flask import Flask, jsonify, request, escape
 from pyxform import xls2xform
+from uuid import uuid4 as uuid
 
 
 def app():
@@ -19,11 +20,12 @@ def app():
     @app.route("/api/v1/convert", methods=["POST"])
     def post():
 
-        xlsform_formid_fallback = sanitize(
-            request.headers.get("X-XlsForm-FormId-Fallback")
+        xlsform_formid_fallback_header = request.headers.get(
+            "X-XlsForm-FormId-Fallback"
         )
-        if xlsform_formid_fallback is None:
-            xlsform_formid_fallback = "tmp"
+        xlsform_formid_fallback = str(uuid())
+        if xlsform_formid_fallback_header != None:
+            xlsform_formid_fallback = sanitize(xlsform_formid_fallback_header)
 
         with TemporaryDirectory() as temp_dir_name:
             try:
