@@ -3,7 +3,7 @@ pyxform-http is a Flask-based web service that uses pyxform to convert a XLSForm
 
 # Install requirements
 * Python 3
-* Java
+* Java 11
 
 # Run locally
 ```
@@ -47,4 +47,9 @@ curl --request POST --header "X-XlsForm-FormId-Fallback: external-choices" --dat
 A form that converts successfully (with no id)
 ```
 curl --request POST --data-binary @test/pyxform-clean.xlsx http://127.0.0.1:5000/api/v1/convert
+```
+
+A form that converts successfully (with percent encoded id)
+```
+curl --request POST --header "X-XlsForm-FormId-Fallback: example%40example.org"  --data-binary @test/pyxform-clean.xlsx http://127.0.0.1:5000/api/v1/convert
 ```

@@ -7,6 +7,7 @@ import os.path
 from flask import Flask, jsonify, request, escape
 from pyxform import xls2xform
 from uuid import uuid4 as uuid
+from urllib.parse import unquote
 
 
 def app():
@@ -23,9 +24,10 @@ def app():
         xlsform_formid_fallback_header = request.headers.get(
             "X-XlsForm-FormId-Fallback"
         )
-        xlsform_formid_fallback = str(uuid())
-        if xlsform_formid_fallback_header != None:
+        if xlsform_formid_fallback_header is not None:
             xlsform_formid_fallback = sanitize(xlsform_formid_fallback_header)
+        else:
+            xlsform_formid_fallback = str(uuid())
 
         with TemporaryDirectory() as temp_dir_name:
             try:
@@ -74,7 +76,7 @@ def app():
 
 
 def sanitize(string):
-    return os.path.basename(escape(string))
+    return os.path.basename(escape(unquote(string)))
 
 
 def response(status=400, result=None, itemsets=None, warnings=None, error=None):
@@ -84,7 +86,7 @@ def response(status=400, result=None, itemsets=None, warnings=None, error=None):
             result=result,
             itemsets=itemsets,
             warnings=warnings,
-            error=error,
+            error=error
         ),
         status,
     )
