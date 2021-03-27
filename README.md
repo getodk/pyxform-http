@@ -3,7 +3,7 @@ pyxform-http is a Flask-based web service that uses pyxform to convert a XLSForm
 
 # Install requirements
 * Python 3
-* Java 11
+* Java 8
 
 # Run locally
 ```
