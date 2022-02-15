@@ -14,7 +14,7 @@ FLASK_APP=app/main.py:app FLASK_DEBUG=1 flask run
 # Run in Docker
 ```
 docker build --tag pyxform-http .
-docker run --detach --name pyxform-http --publish 5001:80 pyxform-http
+docker run --detach --publish 5001:80 pyxform-http
 ```
 
 # Test forms
