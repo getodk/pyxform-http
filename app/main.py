@@ -29,14 +29,19 @@ def app():
         else:
             xlsform_formid_fallback = str(uuid())
 
+        request_data = request.get_data()
+
+        file_ext = ".xlsx" if has_zip_magic_number(request_data) else ".xls"
+
         with TemporaryDirectory() as temp_dir_name:
             try:
                 with open(
                     os.path.join(temp_dir_name, xlsform_formid_fallback + ".xml"), "w+"
                 ) as xform, open(
-                    os.path.join(temp_dir_name, xlsform_formid_fallback + ".xlsx"), "wb"
+                    os.path.join(temp_dir_name, xlsform_formid_fallback + file_ext),
+                    "wb",
                 ) as xlsform:
-                    xlsform.write(request.get_data())
+                    xlsform.write(request_data)
                     convert_status = xls2xform.xls2xform_convert(
                         xlsform_path=str(xlsform.name),
                         xform_path=str(xform.name),
@@ -75,6 +80,17 @@ def app():
     return app
 
 
+def has_zip_magic_number(buffer):
+    # https://github.com/h2non/filetype.py/blob/master/filetype/types/archive.py#L54
+    return (
+        len(buffer) > 3
+        and buffer[0] == 0x50
+        and buffer[1] == 0x4B
+        and (buffer[2] == 0x3 or buffer[2] == 0x5 or buffer[2] == 0x7)
+        and (buffer[3] == 0x4 or buffer[3] == 0x6 or buffer[3] == 0x8)
+    )
+
+
 def sanitize(string):
     return os.path.basename(escape(unquote(string)))
 
@@ -86,7 +102,7 @@ def response(status=400, result=None, itemsets=None, warnings=None, error=None):
             result=result,
             itemsets=itemsets,
             warnings=warnings,
-            error=error
+            error=error,
         ),
         status,
     )

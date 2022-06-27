@@ -53,3 +53,8 @@ A form that converts successfully (with percent encoded id)
 ```
 curl --request POST --header "X-XlsForm-FormId-Fallback: example%40example.org"  --data-binary @test/pyxform-clean.xlsx http://127.0.0.1:5001/api/v1/convert
 ```
+
+A form that converts successfully (with no id, in XLS format)
+```
+curl --request POST --data-binary @test/pyxform-clean.xls http://127.0.0.1:5001/api/v1/convert
+```
