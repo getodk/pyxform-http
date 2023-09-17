@@ -4,4 +4,8 @@ on: [push, pull_request]
 
 jobs:
   test:
-    - run: bash test.sh
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Run tests
+        run: bash test.sh

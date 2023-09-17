@@ -19,42 +19,8 @@ docker run --detach --publish 5001:80 pyxform-http
 
 # Test forms
 
-A form that converts successfully (with chunked encoding!)
 ```
-curl --request POST --header "X-XlsForm-FormId-Fallback: pyxform-clean" --header 'Transfer-Encoding: chunked' --data-binary @test/pyxform-clean.xlsx http://127.0.0.1:5001/api/v1/convert
-```
-
-A form that fails to convert and returns a pyxform error
-```
-curl --request POST --header "X-XlsForm-FormId-Fallback: pyxform-error" --data-binary @test/pyxform-error.xlsx http://127.0.0.1:5001/api/v1/convert
+bash test.sh
 ```
 
-A form that converts successfully and also returns pyxform warnings
-```
-curl --request POST --header "X-XlsForm-FormId-Fallback: pyxform-warning" --data-binary @test/pyxform-warning.xlsx http://127.0.0.1:5001/api/v1/convert
-```
-
-A form that passes pyxform's internal checks, but fails ODK Validate's checks
-```
-curl --request POST --header "X-XlsForm-FormId-Fallback: validate-error" --data-binary @test/validate-error.xlsx http://127.0.0.1:5001/api/v1/convert
-```
-
-A form that converts successfully (with external choices)
-```
-curl --request POST --header "X-XlsForm-FormId-Fallback: external-choices" --data-binary @test/external-choices.xlsx http://127.0.0.1:5001/api/v1/convert
-```
-
-A form that converts successfully (with no id)
-```
-curl --request POST --data-binary @test/pyxform-clean.xlsx http://127.0.0.1:5001/api/v1/convert
-```
-
-A form that converts successfully (with percent encoded id)
-```
-curl --request POST --header "X-XlsForm-FormId-Fallback: example%40example.org"  --data-binary @test/pyxform-clean.xlsx http://127.0.0.1:5001/api/v1/convert
-```
-
-A form that converts successfully (with no id, in XLS format)
-```
-curl --request POST --data-binary @test/pyxform-clean.xls http://127.0.0.1:5001/api/v1/convert
-```
+The test script builds, runs, stops, and removes a pyxform-http-tester container
