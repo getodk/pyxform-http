@@ -4,7 +4,8 @@ import logging
 from tempfile import TemporaryDirectory
 import os.path
 
-from flask import Flask, jsonify, request, escape
+from flask import Flask, jsonify, request
+from markupsafe import escape
 from pyxform import xls2xform
 from uuid import uuid4 as uuid
 from urllib.parse import unquote
