@@ -14,7 +14,7 @@ FLASK_APP=app/main.py:app FLASK_DEBUG=1 flask run
 # Run in Docker
 ```
 docker build --tag pyxform-http .
-docker run --detach --publish 5000:80 pyxform-http
+docker run --detach --publish 5001:80 pyxform-http
 ```
 
 # Test forms
@@ -24,3 +24,7 @@ bash test.sh
 ```
 
 The test script builds, runs, stops, and removes a pyxform-http-tester container
+
+# Notes
+
+* We use port 5001 because 5000 is used by ControlCenter on macOS. 
