@@ -34,7 +34,7 @@ if [ "$test_3_actual" != "$test_3_expected" ]; then
 fi
 
 test_4_actual=$(curl --silent --request POST --header "X-XlsForm-FormId-Fallback: validate-error" --data-binary @test/validate-error.xlsx http://127.0.0.1:5001/api/v1/convert)
-test_4_expected='{"error":"ODK Validate Errors:\n>> Something broke the parser.\nError evaluating field 'concat' (${concat}[1]): The problem was located in Calculate expression for ${concat}\nXPath evaluation: cannot handle function 'concatx'\nCaused by: org.javarosa.xpath.XPathUnhandledException: The problem was located in Calculate expression for ${concat}\nXPath evaluation: cannot handle function 'concatx'\n\t... 10 more\n\nThe following files failed validation:\n${tmpt56os9nz}\n\nResult: Invalid","itemsets":null,"result":null,"status":400,"warnings":null}'
+test_4_expected='{"error":"ODK Validate Errors:\n>> Something broke the parser.\nError evaluating field 'concat' (${concat}[1]): The problem was located in Calculate expression for ${concat}\nXPath evaluation: cannot handle function 'concatx'\nCaused by: org.javarosa.xpath.XPathUnhandledException: The problem was located in Calculate expression for ${concat}\nXPath evaluation: cannot handle function 'concatx'\n\t... 10 more\n\nThe following files failed validation:\n${validate-error}\n\nResult: Invalid","itemsets":null,"result":null,"status":400,"warnings":null}'
 if [ "$test_4_actual" != "$test_4_expected" ]; then
   echo "test 4 failed: form that passes pyxform's internal checks, but fails ODK Validate's checks"
   echo "$test_4_actual"
