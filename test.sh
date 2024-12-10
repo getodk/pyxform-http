@@ -35,7 +35,7 @@ fi
 
 # test removes tmp file name from actual and expected
 test_4_actual=$(curl --silent --request POST --data-binary @test/validate-error.xlsx http://127.0.0.1:5001/api/v1/convert | sed 's/tmp[0-9a-z]\{8\}//g')
-test_4_expected=$(echo '{"error":"ODK Validate Errors:\n>> Something broke the parser.\nError evaluating field '\''concat'\'' (${concat}[1]): The problem was located in Calculate expression for ${concat}\nXPath evaluation: cannot handle function '\''concatx'\''\nCaused by: org.javarosa.xpath.XPathUnhandledException: The problem was located in Calculate expression for ${concat}\nXPath evaluation: cannot handle function '\''concatx'\''\n\t... 10 more\n\nThe following files failed validation:\n${}\n\nResult: Invalid","itemsets":null,"result":null,"status":400,"warnings":null}' | sed 's/tmp[0-9a-z]\{8\}//g')
+test_4_expected=$(echo '{"error":"ODK Validate Errors:\n>> Something broke the parser.\nError evaluating field '\''concat'\'' (${concat}[1]): The problem was located in Calculate expression for ${concat}\nXPath evaluation: cannot handle function '\''concatx'\''\nCaused by: org.javarosa.xpath.XPathUnhandledException: The problem was located in Calculate expression for ${concat}\nXPath evaluation: cannot handle function '\''concatx'\''\n\t... 10 more\n\nThe following files failed validation:\n${}\n\nResult: Invalid","itemsets":null,"result":null,"status":400,"warnings":null}' | sed 's/tmp[0-9a-z_]\{8\}//g')
 if [ "$test_4_actual" != "$test_4_expected" ]; then
   echo "test 4 failed: form that passes pyxform's internal checks, but fails ODK Validate's checks"
   test_failed="true"
