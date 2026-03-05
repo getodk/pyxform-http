@@ -27,7 +27,7 @@ if [ "$test_2_actual" != "$test_2_expected" ]; then
 fi
 
 test_3_actual=$(curl --silent --request POST --header "X-XlsForm-FormId-Fallback: pyxform-warning" --data-binary @test/pyxform-warning.xlsx http://127.0.0.1:5001/api/v1/convert)
-test_3_expected='{"error":null,"itemsets":null,"result":"<?xml version=\"1.0\"?><h:html xmlns=\"http://www.w3.org/2002/xforms\" xmlns:h=\"http://www.w3.org/1999/xhtml\" xmlns:ev=\"http://www.w3.org/2001/xml-events\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:jr=\"http://openrosa.org/javarosa\" xmlns:orx=\"http://openrosa.org/xforms\" xmlns:odk=\"http://www.opendatakit.org/xforms\"><h:head><h:title>pyxform-warning</h:title><model odk:xforms-version=\"1.0.0\"><instance><data id=\"pyxform-warning\"><name/><group><age/></group><meta><instanceID/></meta></data></instance><bind nodeset=\"/data/name\" type=\"string\"/><bind nodeset=\"/data/group/age\" type=\"string\"/><bind nodeset=\"/data/meta/instanceID\" type=\"string\" readonly=\"true()\" jr:preload=\"uid\"/></model></h:head><h:body><input ref=\"/data/name\"><label>what is your name</label></input><group ref=\"/data/group\"><input ref=\"/data/group/age\"><label>what is your age</label></input></group></h:body></h:html>","status":200,"warnings":["[row : 3] Group has no label: {'\''name'\'': '\''group'\'', '\''type'\'': '\''begin group'\''}"]}'
+test_3_expected='{"error":null,"itemsets":null,"result":"<?xml version=\"1.0\"?><h:html xmlns=\"http://www.w3.org/2002/xforms\" xmlns:h=\"http://www.w3.org/1999/xhtml\" xmlns:ev=\"http://www.w3.org/2001/xml-events\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:jr=\"http://openrosa.org/javarosa\" xmlns:orx=\"http://openrosa.org/xforms\" xmlns:odk=\"http://www.opendatakit.org/xforms\"><h:head><h:title>pyxform-warning</h:title><model odk:xforms-version=\"1.0.0\"><instance><data id=\"pyxform-warning\"><repeat jr:template=\"\"><name/><age/></repeat><repeat><name/><age/></repeat><meta><instanceID/></meta></data></instance><bind nodeset=\"/data/repeat/name\" type=\"string\"/><bind nodeset=\"/data/repeat/age\" type=\"string\"/><bind nodeset=\"/data/meta/instanceID\" type=\"string\" readonly=\"true()\" jr:preload=\"uid\"/></model></h:head><h:body><group ref=\"/data/repeat\"><label/><repeat nodeset=\"/data/repeat\"><input ref=\"/data/repeat/name\"><label>what is your name</label></input><input ref=\"/data/repeat/age\"><label>what is your age</label></input></repeat></group></h:body></h:html>","status":200,"warnings":["[row : 2] Repeat has no label: {'\''name'\'': '\''repeat'\'', '\''type'\'': '\''begin repeat'\''}"]}'
 if [ "$test_3_actual" != "$test_3_expected" ]; then
   echo "test 3 failed: form that converts and also returns pyxform warnings"
   test_failed="true"
@@ -79,4 +79,4 @@ if [ "$test_failed" == "true" ] ; then
   exit 1
 else
   echo "tests passed"
-fi 
+fi
