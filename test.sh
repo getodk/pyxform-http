@@ -4,20 +4,14 @@ set -o errexit
 set -o nounset
 set -o pipefail
 
-log() { echo >&2 "[test] $*"; }
+docker build --quiet --tag pyxform-http . >/dev/null
+docker run --detach --publish 5001:80 --name pyxform-http-tester pyxform-http >/dev/null
 
-log "Building docker image..."
-docker build --progress=plain --tag pyxform-http .
-
-log "Starting docker image..."
-docker run --detach --publish 127.0.0.1:5001:80 --name pyxform-http-tester pyxform-http
-
-log "Waiting for docker container to come up..."
+# wait for docker container to come up
 sleep 1
 
 test_failed="false"
 
-log "Running test case 1..."
 test_1_actual=$(curl --silent --request POST --header "X-XlsForm-FormId-Fallback: pyxform-clean" --header 'Transfer-Encoding: chunked' --data-binary @test/pyxform-clean.xlsx http://127.0.0.1:5001/api/v1/convert)
 test_1_expected='{"error":null,"itemsets":null,"result":"<?xml version=\"1.0\"?><h:html xmlns=\"http://www.w3.org/2002/xforms\" xmlns:h=\"http://www.w3.org/1999/xhtml\" xmlns:ev=\"http://www.w3.org/2001/xml-events\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:jr=\"http://openrosa.org/javarosa\" xmlns:orx=\"http://openrosa.org/xforms\" xmlns:odk=\"http://www.opendatakit.org/xforms\"><h:head><h:title>pyxform-clean</h:title><model odk:xforms-version=\"1.0.0\"><instance><data id=\"pyxform-clean\"><name/><age/><meta><instanceID/></meta></data></instance><bind nodeset=\"/data/name\" type=\"string\"/><bind nodeset=\"/data/age\" type=\"int\"/><bind nodeset=\"/data/meta/instanceID\" type=\"string\" readonly=\"true()\" jr:preload=\"uid\"/></model></h:head><h:body><input ref=\"/data/name\"><label>what is your name</label></input><input ref=\"/data/age\"><label>what is your age</label></input></h:body></h:html>","status":200,"warnings":[]}'
 if [ "$test_1_actual" != "$test_1_expected" ]; then
@@ -25,7 +19,6 @@ if [ "$test_1_actual" != "$test_1_expected" ]; then
   test_failed="true"
 fi
 
-log "Running test case 2..."
 test_2_actual=$(curl --silent --request POST --header "X-XlsForm-FormId-Fallback: pyxform-error" --data-binary @test/pyxform-error.xlsx http://127.0.0.1:5001/api/v1/convert)
 test_2_expected='{"error":"Unknown question type '\''textX'\''.","itemsets":null,"result":null,"status":400,"warnings":null}'
 if [ "$test_2_actual" != "$test_2_expected" ]; then
@@ -33,7 +26,6 @@ if [ "$test_2_actual" != "$test_2_expected" ]; then
   test_failed="true"
 fi
 
-log "Running test case 3..."
 test_3_actual=$(curl --silent --request POST --header "X-XlsForm-FormId-Fallback: pyxform-warning" --data-binary @test/pyxform-warning.xlsx http://127.0.0.1:5001/api/v1/convert)
 test_3_expected='{"error":null,"itemsets":null,"result":"<?xml version=\"1.0\"?><h:html xmlns=\"http://www.w3.org/2002/xforms\" xmlns:h=\"http://www.w3.org/1999/xhtml\" xmlns:ev=\"http://www.w3.org/2001/xml-events\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:jr=\"http://openrosa.org/javarosa\" xmlns:orx=\"http://openrosa.org/xforms\" xmlns:odk=\"http://www.opendatakit.org/xforms\"><h:head><h:title>pyxform-warning</h:title><model odk:xforms-version=\"1.0.0\"><instance><data id=\"pyxform-warning\"><repeat jr:template=\"\"><name/><age/></repeat><repeat><name/><age/></repeat><meta><instanceID/></meta></data></instance><bind nodeset=\"/data/repeat/name\" type=\"string\"/><bind nodeset=\"/data/repeat/age\" type=\"string\"/><bind nodeset=\"/data/meta/instanceID\" type=\"string\" readonly=\"true()\" jr:preload=\"uid\"/></model></h:head><h:body><group ref=\"/data/repeat\"><label/><repeat nodeset=\"/data/repeat\"><input ref=\"/data/repeat/name\"><label>what is your name</label></input><input ref=\"/data/repeat/age\"><label>what is your age</label></input></repeat></group></h:body></h:html>","status":200,"warnings":["[row : 2] Repeat has no label: {'\''name'\'': '\''repeat'\'', '\''type'\'': '\''begin repeat'\''}"]}'
 if [ "$test_3_actual" != "$test_3_expected" ]; then
@@ -41,7 +33,6 @@ if [ "$test_3_actual" != "$test_3_expected" ]; then
   test_failed="true"
 fi
 
-log "Running test case 4..."
 # test removes tmp file name from actual and expected
 test_4_actual=$(curl --silent --request POST --data-binary @test/validate-error.xlsx http://127.0.0.1:5001/api/v1/convert | sed 's/tmp[0-9a-z]\{8\}//g')
 test_4_expected=$(echo '{"error":"ODK Validate Errors:\n>> Something broke the parser.\nError evaluating field '\''concat'\'' (${concat}[1]): The problem was located in Calculate expression for ${concat}\nXPath evaluation: cannot handle function '\''concatx'\''\nCaused by: org.javarosa.xpath.XPathUnhandledException: The problem was located in Calculate expression for ${concat}\nXPath evaluation: cannot handle function '\''concatx'\''\n\t... 10 more\n\nThe following files failed validation:\n${}\n\nResult: Invalid","itemsets":null,"result":null,"status":400,"warnings":null}' | sed 's/tmp[0-9a-z_]\{8\}//g')
@@ -50,7 +41,6 @@ if [ "$test_4_actual" != "$test_4_expected" ]; then
   test_failed="true"
 fi
 
-log "Running test case 5..."
 test_5_actual=$(curl --silent --request POST --header "X-XlsForm-FormId-Fallback: external-choices" --data-binary @test/external-choices.xlsx http://127.0.0.1:5001/api/v1/convert)
 test_5_expected='{"error":null,"itemsets":"\"list_name\",\"name\",\"label\",\"province\",\"district\"\n\"districts\",\"district_a\",\"District A (in Province 1)\",\"province_1\"\n\"districts\",\"district_b\",\"District B (in Province 1)\",\"province_1\"\n\"districts\",\"district_c\",\"District C (in Province 2)\",\"province_2\"\n\n\"lots\",\"lot_10\",\"Lot 10 (in District A)\",\"province_1\",\"district_a\"\n\"lots\",\"lot_20\",\"Lot 20 (in District A)\",\"province_1\",\"district_a\"\n\"lots\",\"lot_30\",\"Lot 30 (In District B)\",\"province_1\",\"district_b\"\n\"lots\",\"lot_40\",\"Lot 40 (In District C)\",\"province_2\",\"district_c\"\n","result":"<?xml version=\"1.0\"?><h:html xmlns=\"http://www.w3.org/2002/xforms\" xmlns:h=\"http://www.w3.org/1999/xhtml\" xmlns:ev=\"http://www.w3.org/2001/xml-events\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:jr=\"http://openrosa.org/javarosa\" xmlns:orx=\"http://openrosa.org/xforms\" xmlns:odk=\"http://www.opendatakit.org/xforms\"><h:head><h:title>external-choices</h:title><model odk:xforms-version=\"1.0.0\"><instance><data id=\"external-choices\"><province/><district/><lot/><meta><instanceID/></meta></data></instance><instance id=\"provinces\"><root><item><name>province_1</name><label>Province 1</label></item><item><name>province_2</name><label>Province 2</label></item></root></instance><bind nodeset=\"/data/province\" type=\"string\"/><bind nodeset=\"/data/district\" type=\"string\"/><bind nodeset=\"/data/lot\" type=\"string\"/><bind nodeset=\"/data/meta/instanceID\" type=\"string\" readonly=\"true()\" jr:preload=\"uid\"/></model></h:head><h:body><select1 ref=\"/data/province\"><label>Province</label><itemset nodeset=\"instance('\''provinces'\'')/root/item\"><value ref=\"name\"/><label ref=\"label\"/></itemset></select1><input ref=\"/data/district\" query=\"instance('\''districts'\'')/root/item[province= /data/province ]\"><label>District</label></input><input ref=\"/data/lot\" query=\"instance('\''lots'\'')/root/item[province= /data/province  and district= /data/district ]\"><label>Lot</label></input></h:body></h:html>","status":200,"warnings":[]}'
 if [ "$test_5_actual" != "$test_5_expected" ]; then
@@ -58,7 +48,6 @@ if [ "$test_5_actual" != "$test_5_expected" ]; then
   test_failed="true"
 fi
 
-log "Running test case 6..."
 # test removes uuid from actual and expected
 test_6_actual=$(curl --silent --request POST --data-binary @test/pyxform-clean.xlsx http://127.0.0.1:5001/api/v1/convert | sed 's/[0-9a-f-]\{36\}//g')
 test_6_expected=$(echo '{"error":null,"itemsets":null,"result":"<?xml version=\"1.0\"?><h:html xmlns=\"http://www.w3.org/2002/xforms\" xmlns:h=\"http://www.w3.org/1999/xhtml\" xmlns:ev=\"http://www.w3.org/2001/xml-events\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:jr=\"http://openrosa.org/javarosa\" xmlns:orx=\"http://openrosa.org/xforms\" xmlns:odk=\"http://www.opendatakit.org/xforms\"><h:head><h:title>pyxform-clean</h:title><model odk:xforms-version=\"1.0.0\"><instance><data id=\"\"><name/><age/><meta><instanceID/></meta></data></instance><bind nodeset=\"/data/name\" type=\"string\"/><bind nodeset=\"/data/age\" type=\"int\"/><bind nodeset=\"/data/meta/instanceID\" type=\"string\" readonly=\"true()\" jr:preload=\"uid\"/></model></h:head><h:body><input ref=\"/data/name\"><label>what is your name</label></input><input ref=\"/data/age\"><label>what is your age</label></input></h:body></h:html>","status":200,"warnings":[]}' | sed 's/[0-9a-f-]\{36\}//g')
@@ -67,7 +56,6 @@ if [ "$test_6_actual" != "$test_6_expected" ]; then
   test_failed="true"
 fi
 
-log "Running test case 7..."
 # test removes uuid from actual and expected
 test_7_actual=$(curl --silent --request POST --header "X-XlsForm-FormId-Fallback: example%40example.org" --data-binary @test/pyxform-clean.xlsx http://127.0.0.1:5001/api/v1/convert | sed 's/[0-9a-f-]\{36\}//g')
 test_7_expected=$(echo '{"error":null,"itemsets":null,"result":"<?xml version=\"1.0\"?><h:html xmlns=\"http://www.w3.org/2002/xforms\" xmlns:h=\"http://www.w3.org/1999/xhtml\" xmlns:ev=\"http://www.w3.org/2001/xml-events\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:jr=\"http://openrosa.org/javarosa\" xmlns:orx=\"http://openrosa.org/xforms\" xmlns:odk=\"http://www.opendatakit.org/xforms\"><h:head><h:title>pyxform-clean</h:title><model odk:xforms-version=\"1.0.0\"><instance><data id=\"example@example.org\"><name/><age/><meta><instanceID/></meta></data></instance><bind nodeset=\"/data/name\" type=\"string\"/><bind nodeset=\"/data/age\" type=\"int\"/><bind nodeset=\"/data/meta/instanceID\" type=\"string\" readonly=\"true()\" jr:preload=\"uid\"/></model></h:head><h:body><input ref=\"/data/name\"><label>what is your name</label></input><input ref=\"/data/age\"><label>what is your age</label></input></h:body></h:html>","status":200,"warnings":[]}' | sed 's/[0-9a-f-]\{36\}//g')
@@ -76,7 +64,6 @@ if [ "$test_7_actual" != "$test_7_expected" ]; then
   test_failed="true"
 fi
 
-log "Running test case 8..."
 # test removes uuid from actual and expected
 test_8_actual=$(curl --silent --request POST --data-binary @test/pyxform-clean.xls http://127.0.0.1:5001/api/v1/convert | sed 's/[0-9a-f-]\{36\}//g')
 test_8_expected=$(echo '{"error":null,"itemsets":null,"result":"<?xml version=\"1.0\"?><h:html xmlns=\"http://www.w3.org/2002/xforms\" xmlns:h=\"http://www.w3.org/1999/xhtml\" xmlns:ev=\"http://www.w3.org/2001/xml-events\" xmlns:xsd=\"http://www.w3.org/2001/XMLSchema\" xmlns:jr=\"http://openrosa.org/javarosa\" xmlns:orx=\"http://openrosa.org/xforms\" xmlns:odk=\"http://www.opendatakit.org/xforms\"><h:head><h:title>pyxform-clean</h:title><model odk:xforms-version=\"1.0.0\"><instance><data id=\"\"><name/><age/><meta><instanceID/></meta></data></instance><bind nodeset=\"/data/name\" type=\"string\"/><bind nodeset=\"/data/age\" type=\"int\"/><bind nodeset=\"/data/meta/instanceID\" type=\"string\" readonly=\"true()\" jr:preload=\"uid\"/></model></h:head><h:body><input ref=\"/data/name\"><label>what is your name</label></input><input ref=\"/data/age\"><label>what is your age</label></input></h:body></h:html>","status":200,"warnings":[]}' | sed 's/[0-9a-f-]\{36\}//g')
@@ -85,15 +72,11 @@ if [ "$test_8_actual" != "$test_8_expected" ]; then
   test_failed="true"
 fi
 
-log "Cleaning up containers..."
 docker container stop pyxform-http-tester >/dev/null
 docker container rm pyxform-http-tester >/dev/null
 
 if [ "$test_failed" == "true" ] ; then
-  log "!!!"
-  log "!!! Tests failed."
-  log "!!!"
   exit 1
 else
-  echo "Tests passed OK."
+  echo "tests passed"
 fi
