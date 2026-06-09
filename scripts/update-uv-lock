@@ -1,0 +1,2 @@
+#!/bin/bash -eu
+docker run --rm -v "$(pwd)":/app -w /app ghcr.io/astral-sh/uv:python3.12-alpine sh -c "uv lock"
