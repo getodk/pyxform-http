@@ -5,7 +5,7 @@ set -o nounset
 set -o pipefail
 
 docker build --quiet --tag pyxform-http . >/dev/null
-docker run --detach --publish 5001:80 --name pyxform-http-tester pyxform-http >/dev/null
+docker run --detach --publish 127.0.0.1:5001:80 --name pyxform-http-tester pyxform-http >/dev/null
 
 # wait for docker container to come up
 sleep 1
