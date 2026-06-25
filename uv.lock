@@ -2,6 +2,13 @@ version = 1
 revision = 3
 requires-python = "==3.12.*"
 
+[options]
+exclude-newer = "0001-01-01T00:00:00Z" # This has no effect and is included for backwards compatibility when using relative exclude-newer values.
+exclude-newer-span = "P14D"
+
+[options.exclude-newer-package]
+pyxform = false
+
 [[package]]
 name = "blinker"
 version = "1.9.0"
@@ -69,14 +76,14 @@ wheels = [
 
 [[package]]
 name = "gunicorn"
-version = "25.3.0"
+version = "26.0.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "packaging" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/c4/f4/e78fa054248fab913e2eab0332c6c2cb07421fca1ce56d8fe43b6aef57a4/gunicorn-25.3.0.tar.gz", hash = "sha256:f74e1b2f9f76f6cd1ca01198968bd2dd65830edc24b6e8e4d78de8320e2fe889", size = 634883, upload-time = "2026-03-27T00:00:26.092Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/6d/b7/a4a3f632f823e432ce6bc65f62961b7980c898c77f075a2f7118cb3846fe/gunicorn-26.0.0.tar.gz", hash = "sha256:ca9346f85e3a4aeeb64d491045c16b9a35647abd37ea15efe53080eb8b090baf", size = 727286, upload-time = "2026-05-05T06:38:25.529Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/43/c8/8aaf447698c4d59aa853fd318eed300b5c9e44459f242ab8ead6c9c09792/gunicorn-25.3.0-py3-none-any.whl", hash = "sha256:cacea387dab08cd6776501621c295a904fe8e3b7aae9a1a3cbb26f4e7ed54660", size = 208403, upload-time = "2026-03-27T00:00:27.386Z" },
+    { url = "https://files.pythonhosted.org/packages/e6/40/9c2384fc2be4ad25dd4a49decd5ad9ea5a3639814c11bd40ab77cb9f0a14/gunicorn-26.0.0-py3-none-any.whl", hash = "sha256:40233d26a5f0d1872916188c276e21641155111c2853f0c2cd55260aec0d24fc", size = 212009, upload-time = "2026-05-05T06:38:23.007Z" },
 ]
 
 [[package]]
@@ -151,7 +158,7 @@ wheels = [
 
 [[package]]
 name = "pyxform"
-version = "4.4.1"
+version = "4.5.0"
 source = { registry = "https://pypi.org/simple" }
 dependencies = [
     { name = "defusedxml" },
@@ -159,9 +166,9 @@ dependencies = [
     { name = "openpyxl" },
     { name = "xlrd" },
 ]
-sdist = { url = "https://files.pythonhosted.org/packages/94/37/64d5a7c60e81d9625aa47b14b65e805ca84ca50ade475a5309ae8dcf7591/pyxform-4.4.1.tar.gz", hash = "sha256:37a1bb9239d1f1ae61a82d8d67d0c61959d91e6311bcb09f05a9448f10211a9c", size = 5514944, upload-time = "2026-04-13T04:24:17.589Z" }
+sdist = { url = "https://files.pythonhosted.org/packages/b2/b1/d1db055c688d084a98bad7f545144cba96d3f85e01ab74aa68adfaba8570/pyxform-4.5.0.tar.gz", hash = "sha256:c2b7744b52fb4ca2f05353cab846891690f7a33ac89c1443e7703dafd223755e", size = 5517800, upload-time = "2026-06-25T19:14:38.775Z" }
 wheels = [
-    { url = "https://files.pythonhosted.org/packages/87/40/bf17c0df92d051d42e34cf42fcd4fcef0940cd3bf475feebee5cbedf4b63/pyxform-4.4.1-py3-none-any.whl", hash = "sha256:3a3c197315f83d5370300eec3ca3f058acb304bbd15e00b6f224051e64712469", size = 5530572, upload-time = "2026-04-13T04:24:15.828Z" },
+    { url = "https://files.pythonhosted.org/packages/68/5d/63c72c87f62cfb5f9484f3230a2a5ae6e9c73adc32ee33d74ac6aef7ef7e/pyxform-4.5.0-py3-none-any.whl", hash = "sha256:f6bc546d6b53c54a2b505f50850aaa45e7e306eb37d9c5141745eae17bfe9a94", size = 5535096, upload-time = "2026-06-25T19:14:37.064Z" },
 ]
 
 [[package]]
@@ -177,8 +184,8 @@ dependencies = [
 [package.metadata]
 requires-dist = [
     { name = "flask", specifier = "==3.1.3" },
-    { name = "gunicorn", specifier = "==25.3.0" },
-    { name = "pyxform", specifier = "==4.4.1" },
+    { name = "gunicorn", specifier = "==26.0.0" },
+    { name = "pyxform", specifier = "==4.5.0" },
 ]
 
 [[package]]
