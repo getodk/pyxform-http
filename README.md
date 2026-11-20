@@ -13,7 +13,7 @@ FLASK_APP=app/main.py:app FLASK_DEBUG=1 flask run --port=5001
 
 # Run in Docker
 ```
-docker build --tag pyxform-http .
+docker build --target runtime --tag pyxform-http .
 docker run --detach --publish 127.0.0.1:5001:80 pyxform-http
 ```
 

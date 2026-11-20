@@ -7,7 +7,7 @@ set -o pipefail
 log() { echo >&2 "[test] $*"; }
 
 log "Building docker image..."
-docker build --target runtime -t pyxform-http .
+docker build --target runtime --tag pyxform-http .
 
 log "Starting docker image..."
 docker run --detach --publish 127.0.0.1:5001:80 --name pyxform-http-tester pyxform-http
