@@ -11,7 +11,7 @@ COPY pyproject.toml \
    .
 RUN --mount=type=cache,target=/root/.cache/uv \
     uv sync \
-        --frozen \
+        --locked \
         --no-dev
 
 #---
@@ -34,7 +34,7 @@ COPY --from=ghcr.io/astral-sh/uv:0.11.9 /uv /bin/
 RUN --mount=type=bind,from=pyxform,target=/tmp/pyxform \
     uv pip install \
         --python /app/.venv/bin/python \
-        --no-deps \
+        --reinstall-package pyxform \
         /tmp/pyxform
 
 RUN /app/.venv/bin/python -c "import importlib.metadata, pyxform.xls2xform; print(importlib.metadata.version('pyxform'))"
