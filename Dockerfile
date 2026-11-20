@@ -11,11 +11,11 @@ COPY pyproject.toml \
    .
 RUN --mount=type=cache,target=/root/.cache/uv \
     uv sync \
-        --frozen \
+        --locked \
         --no-dev
 
 #---
-FROM python:3.12-alpine
+FROM python:3.12-alpine AS base
 
 RUN apk --update add openjdk8-jre-base
 
@@ -26,3 +26,17 @@ COPY ./app .
 
 ENV PATH="/app/.venv/bin:$PATH"
 CMD ["gunicorn", "--bind", "0.0.0.0:80", "--workers", "5", "--timeout", "600", "--max-requests", "1", "--max-requests-jitter", "3", "main:app()"]
+
+#---
+FROM base AS snapshot
+COPY --from=ghcr.io/astral-sh/uv:0.11.9 /uv /bin/
+
+RUN --mount=type=bind,from=pyxform,target=/tmp/pyxform \
+    uv pip install \
+        --python /app/.venv/bin/python \
+        --reinstall-package pyxform \
+        /tmp/pyxform
+
+RUN /app/.venv/bin/python -c "import importlib.metadata, pyxform.xls2xform; print(importlib.metadata.version('pyxform'))"
+
+FROM base AS runtime
