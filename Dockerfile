@@ -1,5 +1,5 @@
 FROM python:3.12-alpine AS builder
-COPY --from=ghcr.io/astral-sh/uv:0.11.9 /uv /uvx /bin/
+COPY --from=ghcr.io/astral-sh/uv:0.13.7 /uv /uvx /bin/
 
 WORKDIR /app
 
@@ -29,7 +29,7 @@ CMD ["gunicorn", "--bind", "0.0.0.0:80", "--workers", "5", "--timeout", "600", "
 
 #---
 FROM base AS snapshot
-COPY --from=ghcr.io/astral-sh/uv:0.11.9 /uv /bin/
+COPY --from=ghcr.io/astral-sh/uv:0.13.7 /uv /bin/
 
 RUN --mount=type=bind,from=pyxform,target=/tmp/pyxform \
     uv pip install \
