@@ -34,6 +34,9 @@ COPY --from=ghcr.io/astral-sh/uv:0.13.7 /uv /bin/
 RUN --mount=type=bind,from=pyxform,target=/tmp/pyxform \
     uv pip install \
         --python /app/.venv/bin/python \
+        --requirements /tmp/pyxform/pylock.toml \
+    && uv pip install \
+        --python /app/.venv/bin/python \
         --reinstall-package pyxform \
         /tmp/pyxform
 
